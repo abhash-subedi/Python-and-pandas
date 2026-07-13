@@ -11,10 +11,29 @@ def save():
         f.writelines(expenses)
 
 def load():
-    with open(FILE_PATH, 'r') as file:
-        next(file)
-        for line in file:
-            expenses.append(line)
+    def load():
+        try:
+            with open(FILE_PATH, 'r') as file:
+                # .read().splitlines() splits lines cleanly and strips away hidden \r or \n tokens
+                lines = file.read().splitlines() 
+                
+                if not lines:
+                    print("--- File is completely empty ---")
+                    return
+                    
+                # Clear previous data so you don't double your list if you press 5 twice
+                expenses.clear() 
+                
+                # Use a manual slice to skip the first header line safely
+                # lines[1:] means "start at index 1 and go to the end"
+                for line in lines[1:]:
+                    if line.strip():  # Skip empty rows
+                        expenses.append(line + '\n') # Re-add newline for consistency with show_full()
+                        
+                print(f"--- Successfully loaded {len(expenses)} rows of data! ---")
+                
+        except FileNotFoundError:
+            print(f"--- Error: System cannot find the file at {FILE_PATH} ---")
 
 def show_full():
     
@@ -24,8 +43,8 @@ def show_full():
 
 def show_summary():
     summary = {}
-    min = 100000
-    max = -100000
+    min_amount = 100000
+    max_amount = -100000
     no_expenses = len(expenses)
     for expense in expenses:
         date, category, amount,  description = expense.strip().split(',')
@@ -33,15 +52,15 @@ def show_summary():
             summary[category] = 0
         amount = float(amount)
         summary[category] += amount
-        if amount < min:
-            min = amount
-        if amount > max:
-            max = amount
-        avg = sum(summary.values()) / no_expenses if no_expenses > 0 else 0
+        if amount < min_amount:
+            min_amount = amount
+        if amount > max_amount:
+            max_amount = amount
+        avg_amount = sum(summary.values()) / no_expenses if no_expenses > 0 else 0
     print(summary)
-    print(f"Minimum amount: {min}")
-    print(f"Maximum amount: {max}")
-    print(f"Average amount: {avg}")
+    print(f"Minimum amount: {min_amount}")
+    print(f"Maximum amount: {max_amount}")
+    print(f"Average amount: {avg_amount}")
 
 def add(date:str, category:str, amount:float, description:str):
     expenses.append(f'{date},{category},{amount},{description}\n')
@@ -59,15 +78,21 @@ def main():
             add(date, category, amount, description)
         elif response == '2':
             show_full()
+            
         elif response == '3':
             show_summary()
+            
         elif response == '4':
             save()
+            
         elif response == '5':
             load()
+            
+        
         else:
             print('Invalid option. Please try again.')
         
-        main()
+            main()
 
-main()
+if __name__ == "__main__":
+    main()
