@@ -46,8 +46,8 @@ def show_full():
 def show_summary():
     """Displays a summary of the expenses."""
     summary = {}
-    min_amount = None
-    max_amount = None
+    min_amount = 1000000  # Set to a high value to ensure it gets replaced
+    max_amount = 0
     no_expenses = len(expenses)
     for expense in expenses:
         date, category, amount,  description = expense.strip().split(',')
@@ -67,6 +67,7 @@ def show_summary():
 
 def add(date:str, category:str, amount:float, description:str):
     """"Adds a new expense to the list."""
+
     expenses.append(f'{date},{category},{amount},{description}\n')
     
 
@@ -78,6 +79,9 @@ def main():
             date = input('Enter the date of the bill (YYYY-MM-DD): ')
             category = input('Enter the category of the bill: ')
             amount = float(input('Enter the amount of the bill: '))
+            if(amount < 0):
+                print('Amount cannot be negative. Please try again.')
+                continue
             description = input('Enter a description for the bill: ')
             add(date, category, amount, description)
         elif response == '2':
