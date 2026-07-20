@@ -1,7 +1,6 @@
 from pathlib import Path
 from datetime import datetime
 
-
 ROOT_DIR = Path(__file__).resolve().parent
 FILE_PATH = ROOT_DIR / "data" / "expenses_sample.csv"
 
